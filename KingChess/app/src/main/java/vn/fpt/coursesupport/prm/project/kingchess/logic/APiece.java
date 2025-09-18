@@ -8,7 +8,6 @@ public abstract class APiece extends AComponent {
 	protected Position currentPosition;
 	protected Board board;
 	protected Team team;
-	protected String imagePath;
 	protected State currentState, unSelected, selected, dead;
 	protected List<IPieceObserver> observerList;
 	protected List<Position> lastPositions;
@@ -81,14 +80,6 @@ public abstract class APiece extends AComponent {
 
 	public void setTeam(Team team) {
 		this.team = team;
-	}
-	
-	public String getImagePath() {
-		return imagePath;
-	}
-	
-	public void setImagePath(String path) {
-		imagePath = path;
 	}
 		
 	public void addObserver(IPieceObserver obs) {

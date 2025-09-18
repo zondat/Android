@@ -5,9 +5,12 @@ import android.graphics.Color;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import vn.fpt.coursesupport.prm.project.kingchess.logic.APiece;
+import vn.fpt.coursesupport.prm.project.kingchess.logic.Board;
 import vn.fpt.coursesupport.prm.project.kingchess.logic.IPieceObserver;
 import vn.fpt.coursesupport.prm.project.kingchess.logic.Match;
 import vn.fpt.coursesupport.prm.project.kingchess.logic.Position;
@@ -17,12 +20,13 @@ import vn.fpt.coursesupport.prm.project.kingchess.view.IGridMapObserver;
 
 public class Presenter implements IPieceObserver, IGridMapObserver {
 
-    private GridMap viewModel;
-    private Match gameModel;
-
-    private int highlightColor = Color.parseColor("#DC143C");
-    private int selectedColor = Color.parseColor("#FCB53B");
-    private int suggestionColor = Color.parseColor("#FFFFAF");
+    private final GridMap viewModel;
+    private final Match gameModel;
+    private final Board board;
+    private final int highlightColor = Color.parseColor("#DC143C");
+    private final int selectedColor = Color.parseColor("#FCB53B");
+    private final int suggestionColor = Color.parseColor("#FFFFAF");
+    private Map<APiece, String> imagePaths;
 
     public Presenter(Context context) {
         viewModel = new GridMap(context, 8, 8);
@@ -31,7 +35,43 @@ public class Presenter implements IPieceObserver, IGridMapObserver {
         viewModel.init();
 
         gameModel = new Match();
-        gameModel.init();
+
+        board = gameModel.getBoard();
+
+        imagePaths = new HashMap<>();
+        imagePaths.put(board.getBlackTeam().getPiece(0), "b_king_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(1), "b_queen_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(2), "b_bishop_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(3), "b_bishop_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(4), "b_knight_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(5), "b_knight_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(6), "b_rook_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(7), "b_rook_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(8), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(9), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(10), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(11), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(12), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(13), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(14), "b_pawn_48x48");
+        imagePaths.put(board.getBlackTeam().getPiece(15), "b_pawn_48x48");
+
+        imagePaths.put(board.getWhiteTeam().getPiece(0), "w_king_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(1), "w_queen_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(2), "w_bishop_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(3), "w_bishop_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(4), "w_knight_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(5), "w_knight_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(6), "w_rook_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(7), "w_rook_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(8), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(9), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(10), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(11), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(12), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(13), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(14), "w_pawn_48x48");
+        imagePaths.put(board.getWhiteTeam().getPiece(15), "w_pawn_48x48");
 
         for (APiece piece : gameModel.getBoard().getAllPieces()) {
             piece.addObserver(this);
@@ -96,12 +136,12 @@ public class Presenter implements IPieceObserver, IGridMapObserver {
     @Override
     public void updateMove(APiece piece, Position previousPosition, Position currentPosition) {
         // Remove moving suggestion zone
-        viewModel.clearBackground();
+//        viewModel.clearBackground();
 
         // Update Image in cells
         viewModel.setImage(previousPosition.getRow(), previousPosition.getCol(), null);
         viewModel.getCell(previousPosition.getRow(), previousPosition.getCol()).restoreBackground();
-        viewModel.setImage(currentPosition.getRow(), currentPosition.getCol(), piece.getImagePath());
+        viewModel.setImage(currentPosition.getRow(), currentPosition.getCol(), imagePaths.get(piece));
     }
 
     @Override

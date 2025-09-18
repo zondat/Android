@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GridMap implements UIComponent {
-	private List<IGridMapObserver> observerList = null;
-	private List<Cell> cellList;
+	private final List<IGridMapObserver> observerList;
+	private final List<Cell> cellList;
 	private GridLayout gridLayout;
-	private int defaultBackgroundColor = Color.parseColor("#647FBC");
+	private final int defaultBackgroundColor = Color.TRANSPARENT;
 	protected Context context;
 	private int nRows, nCols;
-	private int pad = 2, margin = 2;
+	private final int pad = 2, margin = 2;
 
 	public GridMap(Context context, int nbRows, int nbCols) {
 		observerList = new ArrayList<>();
@@ -48,8 +48,6 @@ public class GridMap implements UIComponent {
 			);
 
 			int minWidth 	= computeWidth();
-			int minHeight 	= computeHeight();
-			int dimension 	= minWidth < minHeight ? minWidth : minHeight;
 			params.width 	= minWidth;
 			params.height 	= minWidth;
 			params.setGravity(Gravity.FILL);
@@ -123,8 +121,8 @@ public class GridMap implements UIComponent {
 		}
 	}
 
-	public void setImage(int row, int col, String imagePath) {
-		getCell(row, col).setImage(imagePath);
+	public void setImage(int row, int col, String drawableId) {
+		getCell(row, col).setImage(drawableId);
 	}
 
 	public void notifyClicked(int row, int col) {

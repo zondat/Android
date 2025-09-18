@@ -31,45 +31,45 @@ public class Team extends AComponent {
 		this.player = player;
 	}
 
-	public King createKing(Board board, Position pos, String imagePath) {
+	public King createKing(Board board, Position pos) {
 		King piece = new King(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
 		return piece;
 	}
 	
-	public Queen createQueen(Board board, Position pos, String imagePath) {
+	public Queen createQueen(Board board, Position pos) {
 		Queen piece = new Queen(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
 		return piece;
 	}
 	
-	public Bishop createBishop(Board board, Position pos, String imagePath) {
+	public Bishop createBishop(Board board, Position pos) {
 		Bishop piece = new Bishop(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
 		return piece;
 	}
 	
-	public Knight createKnight(Board board, Position pos, String imagePath) {
+	public Knight createKnight(Board board, Position pos) {
 		Knight piece = new Knight(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
 		return piece;
 	}
 	
-	public Rook createRook(Board board, Position pos, String imagePath) {
+	public Rook createRook(Board board, Position pos) {
 		Rook piece = new Rook(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
 		return piece;
 	}
 	
-	public Pawn createPawn(Board board, Position pos, String imagePath) {
+	public Pawn createPawn(Board board, Position pos, boolean direction) {
 		Pawn piece = new Pawn(board, this);
-		setBasicInfo(piece, pos, imagePath);
+		setBasicInfo(piece, pos);
+		piece.setDirection(direction);
 		return piece;
 	}
 	
-	private void setBasicInfo(APiece piece, Position pos, String imagePath) {
+	private void setBasicInfo(APiece piece, Position pos) {
 		piece.setCurrentPosition(pos);
-		piece.setImagePath(imagePath);
 		addPiece(piece);
 	}
 	

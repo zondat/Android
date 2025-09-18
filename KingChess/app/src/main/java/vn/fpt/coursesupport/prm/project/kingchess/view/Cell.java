@@ -15,7 +15,7 @@ public class Cell implements UIComponent {
 	private GridMap parent;
 	private ImageButton button;
 	private int row, col;
-	private int defaultBackground = Color.parseColor("#FAFDD6");
+	private int defaultBackground = Color.TRANSPARENT;
 	protected Context context;
 	protected View.OnClickListener mouseListener;
 	private State currentState, disabled, enabled;
@@ -62,9 +62,11 @@ public class Cell implements UIComponent {
 	}
 
 	public void setImage(String drawableId) {
-		Drawable img = Util.getDrawable(context, drawableId);
-		button.setScaleType(ImageView.ScaleType.CENTER_CROP);
-		button.setBackground(img);
+		if (drawableId!=null) {
+			Drawable img = Util.getDrawable(context, drawableId);
+			button.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			button.setBackground(img);
+		}
 	}
 
 	public void restoreBackground() {
