@@ -79,5 +79,25 @@
             android:layout_height="match_parent"
             android:layout_marginTop="10dp" />
 
+        <include
+            android:id="@+id/viewMall"
+            layout="@layout/mall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp" />
+
+        <include
+            android:id="@+id/viewLive"
+            layout="@layout/live"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp" />
+
+        <include
+            android:id="@+id/viewAccount"
+            layout="@layout/account"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

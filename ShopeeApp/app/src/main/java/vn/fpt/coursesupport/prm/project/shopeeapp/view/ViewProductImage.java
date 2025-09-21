@@ -28,18 +28,12 @@ import vn.fpt.coursesupport.prm.project.shopeeapp.R;
 public class ViewProductImage extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PRODUCT_NAME = "productName";
-    private static final String ARG_DRAWABLE_ID = "drawableId";
-
-    // TODO: Rename and change types of parameters
     private TextView txtViewProduct;
     private ImageView imgViewProduct;
 
-    public ViewProductImage() {
-        // Required empty public constructor
-    }
-
-    public static ViewProductImage newInstance(String id, String name, String drawableId) {
+    private static final String ARG_PRODUCT_NAME = "productName";
+    private static final String ARG_DRAWABLE_ID = "drawableId";
+    public static ViewProductImage newInstance(String name, String drawableId) {
         ViewProductImage fragment = new ViewProductImage();
         Bundle args = new Bundle();
         args.putString(ARG_PRODUCT_NAME, name);
@@ -47,6 +41,8 @@ public class ViewProductImage extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    public ViewProductImage() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,11 +74,7 @@ public class ViewProductImage extends Fragment {
 
         if (drawableId != 0) {
             return ResourcesCompat.getDrawable(resources, drawableId, null);
-        } else {
-            // Handle case where drawable is not found
-            return null;
         }
+        return null;
     }
-
-
 }
