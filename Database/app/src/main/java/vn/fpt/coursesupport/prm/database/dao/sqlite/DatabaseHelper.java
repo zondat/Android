@@ -4,9 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import vn.fpt.coursesupport.prm.database.model.Book;
-import vn.fpt.coursesupport.prm.database.model.Person;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -17,18 +14,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        BookDAOImpl.INSTANCE.createTable();
-        PersonDAOImpl.INSTANCE.createTable();
-        LibraryDAOImpl.INSTANCE.createTable();
-    }
+    public void onCreate(SQLiteDatabase db) {}
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        BookDAOImpl.INSTANCE.deleteTable();
-        PersonDAOImpl.INSTANCE.deleteTable();
-        LibraryDAOImpl.INSTANCE.deleteTable();
-
         onCreate(db);
     }
 
@@ -37,14 +26,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public SQLiteDatabase openDatabase() {
-        return this.getWritableDatabase();
-    }
 
-    public void closeDatabase() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        if (db != null && db.isOpen()) {
-            db.close();
-        }
-    }
 }
