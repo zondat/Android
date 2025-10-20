@@ -1,11 +1,9 @@
 package vn.fpt.coursesupport.prm.database.dao;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import vn.fpt.coursesupport.prm.database.dao.sqlite.DatabaseHelper;
 
 public interface IGenericDAO {
     boolean createTable();
-    boolean openDatabase(Context context);
-    void closeDatabase();
+    IGenericDAO setHelper(DatabaseHelper helper);
     void deleteTable();
 }

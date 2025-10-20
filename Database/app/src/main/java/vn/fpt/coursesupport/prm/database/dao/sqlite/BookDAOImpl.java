@@ -1,30 +1,47 @@
 package vn.fpt.coursesupport.prm.database.dao.sqlite;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import vn.fpt.coursesupport.prm.database.dao.AGenericDAO;
 import vn.fpt.coursesupport.prm.database.dao.IBookDAO;
+import vn.fpt.coursesupport.prm.database.dao.IGenericDAO;
 import vn.fpt.coursesupport.prm.database.model.Book;
 import vn.fpt.coursesupport.prm.database.model.Person;
 
-public class BookDAOImpl implements IBookDAO {
+public class BookDAOImpl extends AGenericDAO implements IBookDAO {
 
-    private DatabaseHelper dbHelper;
-    private SQLiteDatabase database = null;
-
-    private final String tableName = "books";
-    private final String columnId = "id";
     private final String columnName = "name";
+    public static BookDAOImpl INSTANCE = new BookDAOImpl();
 
-    public static IBookDAO INSTANCE = new BookDAOImpl();
+    private BookDAOImpl() {
+        tableName = "books";
+    }
 
-    private BookDAOImpl() {}
+    @Override
+    public boolean createTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS " + tableName + "(" +
+                columnId +" INTEGER" + "," +
+                columnName + " TEXT" +
+                ");";
+        Log.d("BookDAO", sql);
+        try {
+            databaseHelper.getWritableDatabase().execSQL(sql);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 
     @Override
     public synchronized boolean save(Book book) {
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
         database.beginTransaction();
         try {
             ContentValues values = new ContentValues();
@@ -33,11 +50,12 @@ public class BookDAOImpl implements IBookDAO {
             database.insert(tableName, null, values);
             database.setTransactionSuccessful();
 
-            for (Person author : book.getAuthors()) {
-                PersonDAOImpl.INSTANCE.save(author);// update bookId column ;
+            // Update authorship
+            for (Person author: book.getAuthors()) {
+                PersonDAOImpl.INSTANCE.updateAuthorship(author, book.getId());
             }
         } catch (Exception e) {
-            Log.e("BookDao", "Error on saving book", e);
+            Log.e(tableName, "Error on saving book", e);
             return false;
         } finally {
             database.endTransaction();
@@ -48,73 +66,113 @@ public class BookDAOImpl implements IBookDAO {
     @Override
     public synchronized void update(Book book) {
         ContentValues values = new ContentValues();
-        values.put(columnId, book.getId());
         values.put(columnName, book.getName());
 
-        database.update(tableName,
-                            values,
-                columnId + " = ?",
-                            new String[]{String.valueOf(book.getId())});
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+        database.update(tableName, values,columnId + " = ?",
+                        new String[]{String.valueOf(book.getId())});
+
+        // Update authorship
+        List<Person> authors = book.getAuthors();
+        for (Person author: authors) {
+            PersonDAOImpl.INSTANCE.updateAuthorship(author, book.getId());
+        }
     }
 
     @Override
-    public Book get(long id) {
-
+    public Book getBookById(int bookId) {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
         Cursor cursor = database.query(
                 tableName,
                 new String[]{columnId, columnName},
                 columnId + " = ?",
-                new String[]{String.valueOf(id)},
+                new String[]{String.valueOf(bookId)},
                 null, null, null
         );
 
         Book book = null;
         if (cursor.moveToFirst()) {
             book = new Book();
-            book.setId(id);
+            book.setId(bookId);
             book.setName(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
+
+            // Search for authors
+            List<Person> authors = PersonDAOImpl.INSTANCE.getAuthors(bookId);
+            book.setAuthors(authors);
         }
+
         cursor.close();
         return book;
     }
 
     @Override
-    public synchronized void delete(long id) {
-        database.delete(tableName, columnId + " = ?", new String[]{String.valueOf(id)});
-    }
+    public List<Book> getAllBooks() {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
-    @Override
-    public boolean createTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS " + "tableName (" +
-                columnId + " LONG PRIMARY KEY AUTOINCREMENT," +
-                columnName + " TEXT" +
-                ");";
-        database.execSQL(sql);
-        return true;
-    }
+        Cursor cursor = database.query(
+                tableName,
+                new String[]{columnId, columnName},
+                "*",
+                null,
+                null, null, null
+        );
 
-    @Override
-    public boolean openDatabase(Context context) {
-        if (database == null) {
-            dbHelper = new DatabaseHelper(context);
-            database = dbHelper.openDatabase();
+        List<Book> allBooks = new ArrayList<>();
+        Book book = null;
+        if (cursor.moveToFirst()) {
+            do {
+                // Create book
+                book = new Book();
+                book.setId(cursor.getInt(cursor.getColumnIndexOrThrow(columnId)));
+                book.setName(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
+
+                // Search for authors
+                List<Person> authors = PersonDAOImpl.INSTANCE.getAuthors(book.getId());
+                book.setAuthors(authors);
+
+                // Add to list
+                allBooks.add(book);
+            }
+            while (cursor.moveToNext());
         }
-        return database != null;
+
+        cursor.close();
+        return allBooks;
     }
 
     @Override
-    public void closeDatabase() {
-        dbHelper.closeDatabase();
-        database = null;
+    public List<Book> getBooksByName(String name) {
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+
+        // Create query
+        Cursor cursor = database.query(
+                tableName,
+                new String[]{columnId, columnName},
+                columnName + " = ?",
+                new String[]{name},
+                null, null, null
+        );
+
+        Book book = null;
+        List<Book> bookList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            int bookId = cursor.getInt(cursor.getColumnIndexOrThrow(columnId));
+
+            // Create book
+            book = new Book();
+            book.setId(bookId);
+            book.setName(name);
+
+            // Search for authors
+            List<Person> authors = PersonDAOImpl.INSTANCE.getAuthors(bookId);
+            book.setAuthors(authors);
+
+            // Add book to list
+            bookList.add(book);
+        }
+
+        cursor.close();
+        return bookList;
     }
 
-    @Override
-    public void deleteTable() {
-        String sql = "DROP TABLE IF EXISTS " + "tableName" + ";";
-        database.execSQL(sql);
-    }
-
-    public void setDatabase(SQLiteDatabase db) {
-        database = db;
-    }
 }

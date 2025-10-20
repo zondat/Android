@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Book {
 
-    private Long id;
+    private Integer id;
     private String name;
     private List<Person> authors;
 
@@ -13,16 +13,21 @@ public class Book {
         authors = new ArrayList<>();
     }
 
-    public Book(String name) {
+    public Book(Integer id) {
         this();
+        setId(id);
+    }
+
+    public Book(Integer id, String name) {
+        this(id);
         setName(name);
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -40,6 +45,10 @@ public class Book {
 
     public void addAuthor(Person author) {
         if (!authors.contains(author)) authors.add(author);
+    }
+
+    public void setAuthors(List<Person> authors) {
+        this.authors = authors;
     }
 
 }
