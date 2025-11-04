@@ -1,41 +1,31 @@
 package vn.fpt.coursesupport.prm.multithreading.spaceship;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.Alien;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.Spaceship;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.Game;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.GameObject;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.IGameListener;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.CollisionHandler;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.EventHandler;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.KeyboardHandler;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.GameTick;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.ITimeListener;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.ImageHandler;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.AnimationHandler;
 
-public class MainActivity extends AppCompatActivity implements ITimeListener, IGameListener {
+public class MainActivity extends AppCompatActivity implements ITimeListener {
 
     private ConstraintLayout rootLayout;
     private CollisionHandler collisionHandler;
-    private ImageHandler imageHandler;
-    private EventHandler eventHandler;
-    private ScheduledExecutorService executor;
+    private AnimationHandler imageHandler;
+    private KeyboardHandler eventHandler;
     private ConstraintLayout.LayoutParams params;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements ITimeListener, IG
         setContentView(R.layout.activity_main);
 
         params = new ConstraintLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
         params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
         params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -53,26 +43,33 @@ public class MainActivity extends AppCompatActivity implements ITimeListener, IG
 
         rootLayout = findViewById(R.id.main);
 
-        // Init game
+        // Screen resolution
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+        Log.d("Screen", "Width: " + screenWidth + " Height: " + screenHeight);
+        Log.d("Screen", "Density: " + displayMetrics.density + " DPI: " + displayMetrics.densityDpi);
+
+        // Game Initialization
+        GameObject.screenWidth = screenWidth;
+        GameObject.screenHeight = screenHeight;
+
         Game game = new Game();
-
-
         collisionHandler = new CollisionHandler(game);
-        imageHandler = new ImageHandler(game);
+        imageHandler = new AnimationHandler(game);
         imageHandler.setContext(this);
 
-        game.addListener(imageHandler);
-        game.addListener(this);
-
-        Spaceship spaceship = game.createSpaceship(250, 1050);
+        Spaceship spaceship = game.createSpaceship(250, 1500);
 //        Alien alien1 = game.createAlien(120, 120);
 //        Alien alien2 = game.createAlien(90, 120);
 
-        eventHandler = new EventHandler(spaceship);
+        eventHandler = new KeyboardHandler(spaceship);
         eventHandler.start();
-        GameTick.INSTANCE.addTimeListener(game);
-        GameTick.INSTANCE.addTimeListener(collisionHandler);
-        GameTick.INSTANCE.addTimeListener(this);
+        GameTick.INSTANCE.addListener(game);
+        GameTick.INSTANCE.addListener(collisionHandler);
+        GameTick.INSTANCE.addListener(this);
         GameTick.INSTANCE.start();
     }
 
@@ -89,17 +86,17 @@ public class MainActivity extends AppCompatActivity implements ITimeListener, IG
         });
     }
 
-    @Override
-    public void updateGameObject(GameObject gameObject) {
-        runOnUiThread(() -> {
-            rootLayout.addView(imageHandler.getObjectView(gameObject), params);
-        });
-    }
-
-    @Override
-    public void notifyGameObjectDeleted(GameObject gameObject) {
-        runOnUiThread(() -> {
-            rootLayout.removeView(imageHandler.getObjectView(gameObject));
-        });
-    }
+//    @Override
+//    public void updateNewGameObject(GameObject gameObject) {
+//        runOnUiThread(() -> {
+//            rootLayout.addView(imageHandler.getObjectView(gameObject), params);
+//        });
+//    }
+//
+//    @Override
+//    public void updateGameObjectDeleted(GameObject gameObject) {
+//        runOnUiThread(() -> {
+//            rootLayout.removeView(imageHandler.getObjectView(gameObject));
+//        });
+//    }
 }

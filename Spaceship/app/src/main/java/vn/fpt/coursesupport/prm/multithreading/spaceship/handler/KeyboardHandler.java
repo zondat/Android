@@ -2,7 +2,6 @@ package vn.fpt.coursesupport.prm.multithreading.spaceship.handler;
 
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Space;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,11 +10,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.Spaceship;
 
-public class EventHandler extends Thread {
+public class KeyboardHandler extends Thread {
     private Spaceship spaceship;
     private BlockingQueue<Integer> eventQueue;
 
-    public EventHandler(Spaceship character) {
+    public KeyboardHandler(Spaceship character) {
         eventQueue = new LinkedBlockingQueue<>();
         spaceship = character;
     }

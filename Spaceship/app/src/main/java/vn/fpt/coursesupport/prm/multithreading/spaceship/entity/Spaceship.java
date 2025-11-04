@@ -39,9 +39,7 @@ public class Spaceship extends MovingObject implements IAttacking, ICollider, ID
     }
 
     @Override
-    public void moveUp() {
-        updateY(getY() - velocityY);
-    }
+    public void moveUp() { updateY(getY() - velocityY); }
 
     @Override
     public void moveDown() {
@@ -63,6 +61,6 @@ public class Spaceship extends MovingObject implements IAttacking, ICollider, ID
 
     @Override
     public void shoot() {
-        game.createBullet(location.toUp(50 ));
+        game.createBullet(location.toUp(70 ), false);
     }
 }

@@ -24,7 +24,7 @@ public class Alien extends Bot implements IAttacking {
 
     @Override
     public void shoot() {
-        game.createBullet(location.toDown(7));
+        game.createBullet(location.toDown(50), false);
     }
 
     @Override

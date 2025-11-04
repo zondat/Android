@@ -10,7 +10,7 @@ public abstract class GameObject {
     protected float width = 0;
     protected float height = 0;
     protected int image;
-    private DisplayMetrics metrics;
+    public static int screenWidth, screenHeight;
 
     public GameObject(Game owner, float x, float y, float w, float h) {
         id = idGenerator++;
@@ -18,7 +18,6 @@ public abstract class GameObject {
         location = new Location(x, y);
         width = w;
         height = h;
-        metrics = new DisplayMetrics();
     }
 
     public GameObject(Game owner, Location initLocation, float w, float h) {
@@ -27,7 +26,6 @@ public abstract class GameObject {
         location = initLocation;
         width = w;
         height = h;
-        metrics = new DisplayMetrics();
     }
 
     public void setGame(Game game) {
@@ -97,10 +95,10 @@ public abstract class GameObject {
     }
 
     public boolean reachScreenWidth() {
-        return location.x <= 0 || location.x >= metrics.widthPixels;
+        return location.x <= 0 || location.x >= screenWidth;
     }
 
     public boolean reachScreenHeight() {
-        return location.y >= metrics.heightPixels || location.y <=0;
+        return location.y >= screenHeight || location.y <=0;
     }
 }

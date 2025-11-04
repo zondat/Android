@@ -9,21 +9,22 @@ import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.MovingObj
 
 public class Bullet extends MovingObject implements ICollider, IDestroyable {
 
-    private boolean isDestroyed = false;
-    public Bullet(Game owner, float x, float y) {
-        super(owner,x, y, 5, 7, 0, -25);
+    public Bullet(Game owner, float x, float y, boolean dir) {
+        super(owner,x, y, 5, 7, 0, dir? 25: -25);
         image = R.drawable.bullet;
     }
 
-    public Bullet(Game owner, Location initLocation) {
-        super(owner,initLocation, 5, 7, 0, -25);
+    public Bullet(Game owner, Location initLocation, boolean dir) {
+        super(owner,initLocation, 5, 7, 0, dir? 25: -25);
         image = R.drawable.bullet;
     }
 
     @Override
     public void updateLocation() {
         super.updateLocation();
-        if (reachScreenHeight()) destroy();
+        if (reachScreenHeight()) {
+            destroy();
+        }
     }
 
     @Override
@@ -31,11 +32,11 @@ public class Bullet extends MovingObject implements ICollider, IDestroyable {
 
     @Override
     public void destroy() {
-        isDestroyed = true;
+        game.remove(this);
     }
 
     @Override
     public boolean isDestroyed() {
-        return isDestroyed;
+        return false;
     }
 }

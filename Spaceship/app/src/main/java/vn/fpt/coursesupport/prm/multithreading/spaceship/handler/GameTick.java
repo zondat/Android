@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 public class GameTick {
     private ScheduledExecutorService scheduler;
     private long currentTime;
-    private int interval = 50;
     private List<ITimeListener> listeners;
 
     public static GameTick INSTANCE = new GameTick();
@@ -18,10 +17,6 @@ public class GameTick {
         currentTime = 0;
         scheduler = Executors.newScheduledThreadPool(1);
         listeners = new ArrayList<>();
-    }
-
-    public void setInterval(int newInterval) {
-        this.interval = newInterval;
     }
 
     public ScheduledExecutorService getScheduler() {
@@ -38,11 +33,11 @@ public class GameTick {
         }, 0, 16, TimeUnit.MILLISECONDS); // ~60 FPS
     }
 
-    public void addTimeListener(ITimeListener l) {
+    public void addListener(ITimeListener l) {
         listeners.add(l);
     }
 
-    public void removeTimeListener(ITimeListener l) {
+    public void removeListener(ITimeListener l) {
         listeners.remove(l);
     }
 

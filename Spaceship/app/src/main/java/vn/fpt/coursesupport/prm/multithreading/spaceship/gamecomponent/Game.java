@@ -21,16 +21,16 @@ public class Game implements ITimeListener {
         listeners = new ArrayList<>();
     }
 
-    public Bullet createBullet(float x, float y) {
-        Bullet aBullet = new Bullet(this, x, y);
+    public Bullet createBullet(float x, float y, boolean toUp) {
+        Bullet aBullet = new Bullet(this, x, y, toUp);
         objectList.add(aBullet);
         colliderList.add(aBullet);
         notifyNewObject(aBullet);
         return aBullet;
     }
 
-    public Bullet createBullet(Location location) {
-        Bullet aBullet = new Bullet(this, location);
+    public Bullet createBullet(Location location, boolean toUp) {
+        Bullet aBullet = new Bullet(this, location, toUp);
         objectList.add(aBullet);
         colliderList.add(aBullet);
         notifyNewObject(aBullet);
@@ -96,13 +96,13 @@ public class Game implements ITimeListener {
 
     public void notifyNewObject(GameObject gameObject) {
         for (IGameListener listener : listeners) {
-            listener.updateGameObject(gameObject);
+            listener.updateNewGameObject(gameObject);
         }
     }
 
     public void notifyGameObjectDeleted(GameObject gameObject) {
         for (IGameListener listener : listeners) {
-            listener.notifyGameObjectDeleted(gameObject);
+            listener.updateGameObjectDeleted(gameObject);
         }
     }
 
