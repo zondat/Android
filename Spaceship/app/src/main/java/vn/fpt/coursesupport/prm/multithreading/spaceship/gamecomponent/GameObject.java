@@ -101,4 +101,8 @@ public abstract class GameObject {
     public boolean reachScreenHeight() {
         return location.y >= screenHeight || location.y <=0;
     }
+
+    public float getRotation() {
+        return 90.0f;
+    }
 }

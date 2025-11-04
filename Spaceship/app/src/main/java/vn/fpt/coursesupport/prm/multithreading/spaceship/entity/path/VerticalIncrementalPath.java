@@ -1,16 +1,14 @@
 package vn.fpt.coursesupport.prm.multithreading.spaceship.entity.path;
 
-import android.util.DisplayMetrics;
-
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.GameObject;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.IPath;
 
-public class HorizontalPath implements IPath {
+public class VerticalIncrementalPath implements IPath {
 
     private int screenWidth, screenHeight;
     private int coeff = 1;
 
-    public HorizontalPath() {
+    public VerticalIncrementalPath() {
         screenWidth = GameObject.screenWidth;
         screenHeight = GameObject.screenHeight;
     }
@@ -25,7 +23,7 @@ public class HorizontalPath implements IPath {
 
     @Override
     public float nextLocationY(float currentX, float currentY, float Vx, float Vy) {
-        return currentY;
+        return currentY + 1;
     }
 
 }

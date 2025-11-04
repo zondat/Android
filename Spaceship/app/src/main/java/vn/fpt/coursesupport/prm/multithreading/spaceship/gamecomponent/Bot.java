@@ -1,5 +1,9 @@
 package vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent;
 
+import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.path.HorizontalPath;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.path.VerticalIncrementalPath;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.path.VerticalPath;
+
 public abstract class Bot extends MovingObject implements ICollider, IDestroyable {
 
     protected IPath path;
@@ -13,6 +17,19 @@ public abstract class Bot extends MovingObject implements ICollider, IDestroyabl
     public Bot(Game owner, Location initLocation, float w, float h, float vx, float vy) {
         super(owner, initLocation, w, h, vx, vy);
         setPath(path);
+    }
+
+
+    public void setHorizontalPath() {
+        path = new HorizontalPath();
+    }
+
+    public void setVerticalPath() {
+        path = new VerticalPath();
+    }
+
+    public void setVerticalIncremental() {
+        path = new VerticalIncrementalPath();
     }
 
     @Override

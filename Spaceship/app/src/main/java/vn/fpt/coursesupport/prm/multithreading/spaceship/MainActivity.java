@@ -1,39 +1,49 @@
 package vn.fpt.coursesupport.prm.multithreading.spaceship;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.Alien;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.entity.Spaceship;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.Game;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.GameObject;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.CollisionHandler;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.gamecomponent.IGameListener;
+import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.ITimeListener;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.KeyboardHandler;
 import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.GameTick;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.ITimeListener;
-import vn.fpt.coursesupport.prm.multithreading.spaceship.handler.AnimationHandler;
 
-public class MainActivity extends AppCompatActivity implements ITimeListener {
+public class MainActivity extends AppCompatActivity implements ITimeListener, IGameListener {
 
+    private Game game;
     private ConstraintLayout rootLayout;
-    private CollisionHandler collisionHandler;
-    private AnimationHandler imageHandler;
     private KeyboardHandler eventHandler;
     private ConstraintLayout.LayoutParams params;
+    private Map<GameObject, View> objectViews;
+//    private Map<Integer, Bitmap> loadedImages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        objectViews = new HashMap<>();
+//        loadedImages = new HashMap<>();
 
-        params = new ConstraintLayout.LayoutParams(
+         params = new ConstraintLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -56,19 +66,15 @@ public class MainActivity extends AppCompatActivity implements ITimeListener {
         GameObject.screenWidth = screenWidth;
         GameObject.screenHeight = screenHeight;
 
-        Game game = new Game();
-        collisionHandler = new CollisionHandler(game);
-        imageHandler = new AnimationHandler(game);
-        imageHandler.setContext(this);
+        game = new Game();
+        game.addListener(this);
 
         Spaceship spaceship = game.createSpaceship(250, 1500);
-//        Alien alien1 = game.createAlien(120, 120);
-//        Alien alien2 = game.createAlien(90, 120);
+        Alien alien1 = game.createAlien(120, 250);
 
         eventHandler = new KeyboardHandler(spaceship);
         eventHandler.start();
         GameTick.INSTANCE.addListener(game);
-        GameTick.INSTANCE.addListener(collisionHandler);
         GameTick.INSTANCE.addListener(this);
         GameTick.INSTANCE.start();
     }
@@ -79,24 +85,60 @@ public class MainActivity extends AppCompatActivity implements ITimeListener {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void updateGameTick(long currentTime) {
+    public synchronized void updateLocation() {
         runOnUiThread(() -> {
-            imageHandler.updateImage();
+            for (GameObject gameObject: game.getObjectList()) {
+                View view = objectViews.get(gameObject);
+
+                if (view!=null) {
+                    // Update location
+                    view.setX(gameObject.getX());
+                    view.setY(gameObject.getY());
+                }
+            }
         });
     }
 
-//    @Override
-//    public void updateNewGameObject(GameObject gameObject) {
-//        runOnUiThread(() -> {
-//            rootLayout.addView(imageHandler.getObjectView(gameObject), params);
-//        });
-//    }
-//
-//    @Override
-//    public void updateGameObjectDeleted(GameObject gameObject) {
-//        runOnUiThread(() -> {
-//            rootLayout.removeView(imageHandler.getObjectView(gameObject));
-//        });
-//    }
+    @Override
+    public void updateGameTick(long currentTime) {
+        updateLocation();
+    }
+
+    @Override
+    public void updateNewGameObject(GameObject gameObject) {
+        // Add to UI
+        runOnUiThread(() ->{
+            View objectView = loadImage(gameObject);
+            rootLayout.addView(objectView, params);
+
+             // Store to map
+            objectViews.put(gameObject, objectView);
+        });
+    }
+
+    @Override
+    public synchronized void updateGameObjectDeleted(GameObject gameObject) {
+        // Get associated view
+        View objectView = objectViews.get(gameObject);
+
+        // Remove from UI
+        runOnUiThread(() ->{
+            rootLayout.removeView(objectView);
+        });
+
+        // Remove tracking
+        objectViews.remove(gameObject);
+    }
+
+    private View loadImage(GameObject gameObject) {
+        int drawableId = gameObject.getImage();
+
+        // Attach the loaded image to a object view;
+        ImageView objectView = new ImageView(this);
+        objectView.setImageResource(drawableId);
+        objectView.setRotation(gameObject.getRotation());
+
+        return objectView;
+    }
+
 }
